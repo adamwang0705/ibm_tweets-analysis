@@ -87,3 +87,9 @@ ENV/
 
 # Rope project settings
 .ropeproject
+
+# ------------------------ CUSTOM -------------------------- #
+# data files folder inside develop folder
+develop/data
+# intermediate files folder inside develop folder
+develop/inter
