@@ -92,4 +92,4 @@ ENV/
 # data files folder inside develop folder
 develop/data
 # intermediate files folder inside develop folder
-develop/inter
+develop/tmp
