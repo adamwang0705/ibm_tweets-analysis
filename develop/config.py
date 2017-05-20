@@ -11,8 +11,15 @@ import os
 DB_NAME = 'tweets_ek'  # database for tweets collected on expanded keywords
 RAW_COL = 'c1' # collection for raw data
 UPDATED_COL = 'c2'  # collection for updated data
-EN_UPDATED_COL = 'c2_en' # collection for updated English tweets
-NONEN_UPDATED_COL = 'c2_nonen' # collection for updated non-English tweets
+
+# collection for updated English tweets
+EN_UPDATED_COL = 'c2_en'
+
+# collection for updated non-English tweets
+NONEN_UPDATED_COL = 'c2_nonen'
+
+# collection for original tweets of 'retweet tweets'
+RT_ORIGIN_COL = 'c2_rt_origin'
 
 # collection for parsed 'created_at' field of tweets
 PARSED_CREATED_AT_COL = 'c2_parsed_created_at'
