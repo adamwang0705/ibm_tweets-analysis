@@ -105,21 +105,30 @@ def worker_get_unique_user(db_name, collection_name, batch_i, process_n, output_
     print('Process{}/{} Done'.format(batch_i, process_n))
 
     
-def worker_tag_keyword_in_tweet(db_name, collection_name, batch_i, process_n, output_file, keyword):
+'''
+20170422-parse_fields
+Tag 'text' filed of all tweets for different topics/keywords
+
+20170504-user_affiliation_2
+Tag all tweets for keyword 'ibm' in 'text' field (multiprocessing)
+'''
+def worker_tag_kws_in_tw(db_name, collection_name, batch_i, process_n, output_file, kws_lst):
     """
-    Tag whether the keyword appears in (a bath of) tweets in MongoDB database
+    Tag whether a list of keywords appears in (a bath of) tweets in MongoDB database
     
     :param db_name: the name of the MongoDB database (local) to work on
     :param collection_name: the name of the collection in the database to work on
     :param batch_i: the index of this batch, from 0 to processes number minus 1
     :param process_n: the total nubmer of processes working together
     :param output_file: the name/path of the intermediate output file this processing writes into
+    :param kws_lst: a list of keywords
     """
-
-    # initialize a new connection to MongoDB database
+    
+    '''
+    Establish connection to MongoDB database and query batch of tweets
+    '''
     collection = mongodb.initialize(db_name=db_name, collection_name=collection_name)
     
-    # query the batch of tweets
     collection_size = collection.count()
     batch_size = collection_size//process_n
     skip = batch_i * batch_size
@@ -129,23 +138,27 @@ def worker_tag_keyword_in_tweet(db_name, collection_name, batch_i, process_n, ou
     
     time.sleep(batch_i * 0.5) # sleep few seconds to reduce the peak burden of MongoDB database
     
+    print('Process{}/{} handling documents {} to {}...'.format(batch_i, process_n, skip, skip + limit - 1))
     cursor = collection.find(sort=[('_id', pymongo.ASCENDING)], # sort by default '_id' ascending
                              projection={'_id': 0, 'id': 1, 'user.id': 1, 'text': 1}, # minimize I/O bandwidth
                              skip=skip,
                              limit=limit)
-    print('Process{}/{} handling documents {} to {}...'.format(batch_i, process_n, skip, skip + limit - 1))
     
-    # tag the 'text' field of each tweet whether it contains keyword and write to output file
+    '''
+    Tag the 'text' field for each keyword in the list
+    '''   
     with codecs.open(output_file, 'w', 'utf-8') as f:
-        for document in cursor:
-            id_int64 = int(document['id'])
-            user_id_int64 = int(document['user']['id'])
-            text = document['text']
-            text_ibm = utilities.simple_test_keyword_in_text(text=text, keyword=keyword)
+        for doc in cursor:
+            id_int = int(doc['id'])
+            user_id_int = int(doc['user']['id'])
+            text = doc['text']
+            output_dict = {'id': id_int, 'user_id': user_id_int, 'text': text}
             
-            output_dic = {'id': id_int64, 'user_id': user_id_int64, 'text_ibm': text_ibm, 'text': text}
-            f.write(json.dumps(output_dic) + '\n')
-    logging.debug('Done')
+            for ind, kw in enumerate(kws_lst):
+                res = utilities.simple_test_keyword_in_text(text=text, keyword=kw)
+                output_dict['X_' + str(ind)] = res
+            f.write(json.dumps(output_dict) + '\n')
+
 
 def worker_filter_ibm_cascade_tweets(db_name, collection_name, batch_i, process_n, output_file, ibm_user_ids_set):
     """

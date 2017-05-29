@@ -6,9 +6,6 @@ import pymongo
 from pymongo import MongoClient
 from pymongo import errors
 
-DB_NAME = ''
-COLLECTION_NAME = ''
-
 
 def initialize(db_name: object, collection_name: object, host: object = 'localhost', port: object = 27017) -> object:
     """

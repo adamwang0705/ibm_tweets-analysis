@@ -24,18 +24,19 @@ def parse_tweet_created_at_str(created_at_str):
     return timestamp
 
 
-def gen_inter_filenames_list(procedure_name, process_n, suffix):
+def gen_inter_filenames_list(nb_name, procedure_name, process_n, suffix):
     """
     Generate a list of intermediate output filenames for a multiprocessing procedure.
     Each process corresponds to one intermediate output file in the list identified by index.
     By default, intermediate files are written to TMP_DIR dir specified in config.py
     
-    :param procedure_name: the name of the procedure, which is also the common name base for all intermediate output file names
+    :param nb_name: name of the notebook
+    :param procedure_name: name of the procedure, which is also the common name base for all intermediate output file names
     :param process_n: number of processes of this procedure
     :param suffix: common suffix for all intermediate output files of this procedure.
     :return: a list of intermediate output filenames
     """
-    filenames_list = [os.path.join(TMP_DIR, '{}-{}.{}'.format(procedure_name, batch_i, suffix)) 
+    filenames_list = [os.path.join(TMP_DIR, '{}-{}-{}.{}'.format(nb_name, procedure_name, batch_i, suffix)) 
                       for batch_i in range(process_n)]
     return filenames_list
 
@@ -59,7 +60,7 @@ def simple_test_keyword_in_text(text, keyword, ignore_case=True):
    
 
 if __name__ == '__main__':
-    test_keyword = 'IBM'
+    test_keyword = 'is a'
     test_text_lst = ['List your health/beauty service/products #ibm @our http://www.healthandbeautylistings.org directory - a trustworthy testimonial for your business.',
                      'test onibm',
                      'test on iloveibmhahaha',

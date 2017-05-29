@@ -5,30 +5,49 @@ Global configurations for all notebooks and files
 import os
 
 
-# -------------------------------------------
-# MongoDB configurations
-# -------------------------------------------
-DB_NAME = 'tweets_ek'  # database for tweets collected on expanded keywords
-RAW_COL = 'c1' # collection for raw data
-UPDATED_COL = 'c2'  # collection for updated data
+"""
+MongoDB collections
+"""
+# database for tweets collected on expanded keywords
+DB_NAME = 'tweets_ek-2'
 
-# collection for updated English tweets
-EN_UPDATED_COL = 'c2_en'
+# collection of raw data
+TW_RAW_COL = 'tw_raw'
 
-# collection for updated non-English tweets
-NONEN_UPDATED_COL = 'c2_nonen'
+# colletion of native tweets
+TW_NT_COL = 'tw_nt'
+
+# collection of retweets
+TW_RT_COL = 'tw_rt'
+
+# collection for unique users information of all tweets (based on TW_RAW_COL)
+USER_RAW_COL = 'user_raw'
+
+# collection for unique users information of native tweets (based on TW_NT_COL)
+USER_NT_COL = 'user_nt'
+
+# collection for unique users information of retweets (based on TW_RT_COL)
+USER_RT_COL = 'user_rt'
+
+# collection for the bool results of whether keyword 'ibm' appears in users' 'description' field
+# (based on USER_NT_COL)
+USER_NT_DESC_TAG_COL = 'user_nt_desc_tag'
+
+# collection of parsed creation time of all raw tweets
+TW_RAW_PCT_COL = 'tw_raw_pct'
+
+# collection of keywords tag on 'text' field of all raw tweets
+TW_RAW_TXT_KWS_TAG_COL = 'tw_raw_txt_kws_tag'
+
+# collection of keyword 'ibm' tag on 'text' field of all native tweets
+# (based on TW_NT_COL)
+TW_NT_TXT_IBM_TAG_COL = 'tw_nt_txt_ibm_tag'
+
+# ====================================================
 
 # collection for original tweets of 'retweet tweets'
 RT_ORIGIN_COL = 'c2_rt_origin'
 
-# collection for parsed 'created_at' field of tweets
-PARSED_CREATED_AT_COL = 'c2_parsed_created_at'
-
-# collection for all users in 'c2' collection
-USERS_COL = 'c2_users'  
-
-# collection for affliation identification based on user's 'description' field
-USER_DESC_AFFL_COL = 'c2_user_desc_affl'
 
 # collection for 'ibm' keyword tagging results
 IBM_TAG_COL = 'c2_ibm_tag'
@@ -42,28 +61,61 @@ IBM_CASCADE_M1_COL = 'c2_ibm_cascade_m1'
 IBM_CASCADE_M2_COL = 'c2_ibm_cascade_m2'
 
 
-# -------------------------------------------
-# Directory configurations
-# -------------------------------------------
+
+"""
+Directories
+"""
 DATA_DIR = './data'  # directory for pickled data
 TMP_DIR = './tmp'  # directory for temporary data
 FIG_DIR = './fig' # directory for figures
 
-# -------------------------------------------
-# Data pickle configurations
-# -------------------------------------------
 
-# list of 'id' of users identified as affiliated with IBM based on their description' field
-M1_IBM_USER_IDS_PKL = os.path.join(DATA_DIR, 'm1_ibm_user_ids.lst.pkl')
+"""
+Data pickles
+"""
 
-# list of 'id' of users not identified as affiliated with IBM based on their description' field
-M1_NONIBM_USER_IDS_PKL = os.path.join(DATA_DIR, 'm1_nonibm_user_ids.lst.pkl')
+# list of 'id' field of all tweets
+TW_RAW_IDS_LST_PKL = os.path.join(DATA_DIR, 'tw_raw_ids.lst.pkl')
 
-# list of 'id' of users identified as affiliated with IBM based on the proportion of their tweets including keyword 'ibm'
-M2_IBM_USER_IDS_PKL = os.path.join(DATA_DIR, 'm2_ibm_user_ids.lst.pkl')
+# list of 'id' field of native tweets
+TW_NT_IDS_LST_PKL = os.path.join(DATA_DIR, 'tw_nt_ids.lst.pkl')
 
-# list of 'id' of users not identified as affiliated with IBM based on the proportion of their tweets including keyword 'ibm'
-M2_NONIBM_USER_IDS_PKL = os.path.join(DATA_DIR, 'm2_nonibm_user_ids.lst.pkl')
+# list of 'id' field of retweets
+TW_RT_IDS_LST_PKL = os.path.join(DATA_DIR, 'tw_rt_ids.lst.pkl')
+
+
+# list of 'user.id' field of all tweets
+USER_RAW_IDS_LST_PKL = os.path.join(DATA_DIR, 'user_raw_ids.lst.pkl')
+
+# list of 'user.id' field of native tweets
+USER_NT_IDS_LST_PKL = os.path.join(DATA_DIR, 'user_nt_ids.lst.pkl')
+
+# list of 'user.id' field of retweets
+USER_RT_IDS_LST_PKL = os.path.join(DATA_DIR, 'user_rt_ids.lst.pkl')
+
+# list of 'user.id' field of users of native tweets with keyword 'ibm' in their 'description' field
+USER_NT_IBM_DESC_IDS_LST_PKL = os.path.join(DATA_DIR, 'user_nt_ibm_desc_ids.lst.pkl')
+# list of 'user.id' field of users of native tweets without keyword 'ibm' in their 'description' field
+USER_NT_NONIBM_DESC_IDS_LST_PKL = os.path.join(DATA_DIR, 'user_nt_nonibm_desc_ids.lst.pkl')
+
+# list of 'user.id' field of users with >= 1 IBM tweet
+USER_NT_IBM_TW_PROP_1_IDS_LST_PKL = os.path.join(DATA_DIR, 'user_nt_ibm_tw_prop_1_ids.lst.pkl')
+# list of 'user.id' field of users with 0 IBM tweet
+USER_NT_NONIBM_TW_PROP_1_IDS_LST_PKL = os.path.join(DATA_DIR, 'user_nt_nonibm_tw_prop_1_ids.lst.pkl')
+
+# list of 'user.id' field of users with >= first quartile of IBM tweets proportion
+USER_NT_IBM_TW_PROP_2_IDS_LST_PKL = os.path.join(DATA_DIR, 'user_nt_ibm_tw_prop_2_ids.lst.pkl')
+# list of 'user.id' field of users with < first quartile of IBM tweets proportion
+USER_NT_NONIBM_TW_PROP_2_IDS_LST_PKL = os.path.join(DATA_DIR, 'user_nt_nonibm_tw_prop_2_ids.lst.pkl')
+
+# list of 'user.id' field of users with >= median of IBM tweets proportion
+USER_NT_IBM_TW_PROP_3_IDS_LST_PKL = os.path.join(DATA_DIR, 'user_nt_ibm_tw_prop_3_ids.lst.pkl')
+# list of 'user.id' field of users with < median of IBM tweets proportion
+USER_NT_NONIBM_TW_PROP_3_IDS_LST_PKL = os.path.join(DATA_DIR, 'user_nt_nonibm_tw_prop_3_ids.lst.pkl')
+
+
+
+# ====================================================
 
 # dataframe for aggregated (different types of) tweets number and (different types of) retweets count on users
 SIMPLE_INFLUENCE_PKL = os.path.join(DATA_DIR, 'simple_influence.df.pkl')
@@ -73,3 +125,15 @@ IBM_CASCADE_M1_PKL = os.path.join(DATA_DIR, 'ibm_cascade_m1.df.pkl')
 
 # dataframe for aggregated (observed) retweet_count of IBM tweets on IBM/non-IBM users based on method_2 affiliation.
 IBM_CASCADE_M2_PKL = os.path.join(DATA_DIR, 'ibm_cascade_m2.df.pkl')
+
+"""
+Misc
+"""
+# complete set of keywords for raw data collection
+API_QUERY_KWS = ["Artificial Intelligence", "ArtificialIntelligence", "#AI", "Machine Learning", "MachineLearning",
+                 "#ML", "Deep Learning" , "DeepLearning", "#DL", "OpenAI", "Neural Networks", "NeuralNetworks", "Data Mining",
+                 "DataMining", "Big Data", "BigData", "Data Science", "DataScience", "Cognitive Computing", "CognitiveComputing", 
+                 "Data Lake", "DataLake", "DataLakes", "AzureDataLake", "Data Warehouse", "Datawarehouse",
+                 "Predictive Analytics", "PredictiveAnalytics", "#IoT", "#TensorFlow", "#RankBrain", "#DeepMind",
+                 "IBM Watson", "IBMWatson", "#Watson", "BigDataAnalytics", "#Analytics", "#Azure", "Cloud Computing",
+                 "CloudComputing", "#USQL", "#Hadoop", "#Spark", "#PolyBase"]
