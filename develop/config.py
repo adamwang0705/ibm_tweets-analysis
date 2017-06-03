@@ -43,22 +43,17 @@ TW_RAW_TXT_KWS_TAG_COL = 'tw_raw_txt_kws_tag'
 # (based on TW_NT_COL)
 TW_NT_TXT_IBM_TAG_COL = 'tw_nt_txt_ibm_tag'
 
+# collection of retweets of IBM tweets (M1)
+# based on TW_RT_COL
+TW_RT_IBM_TW_COL = 'tw_rt_ibm_tw'
+
 # ====================================================
 
 # collection for original tweets of 'retweet tweets'
 RT_ORIGIN_COL = 'c2_rt_origin'
 
-
 # collection for 'ibm' keyword tagging results
 IBM_TAG_COL = 'c2_ibm_tag'
-
-# collection of IBM cascade tweets (retweet to IBM tweets)
-# based on results of IBM affiliation identificatiton method_1
-IBM_CASCADE_M1_COL = 'c2_ibm_cascade_m1'
-
-# collection of IBM cascade tweets (retweet to IBM tweets)
-# based on results of IBM affiliation identificatiton method_2
-IBM_CASCADE_M2_COL = 'c2_ibm_cascade_m2'
 
 
 
@@ -113,18 +108,13 @@ USER_NT_IBM_TW_PROP_3_IDS_LST_PKL = os.path.join(DATA_DIR, 'user_nt_ibm_tw_prop_
 # list of 'user.id' field of users with < median of IBM tweets proportion
 USER_NT_NONIBM_TW_PROP_3_IDS_LST_PKL = os.path.join(DATA_DIR, 'user_nt_nonibm_tw_prop_3_ids.lst.pkl')
 
-
-
-# ====================================================
-
 # dataframe for aggregated (different types of) tweets number and (different types of) retweets count on users
 SIMPLE_INFLUENCE_PKL = os.path.join(DATA_DIR, 'simple_influence.df.pkl')
 
-# dataframe for aggregated (observed) retweet_count of IBM tweets on IBM/non-IBM users based on method_1 affiliation.
-IBM_CASCADE_M1_PKL = os.path.join(DATA_DIR, 'ibm_cascade_m1.df.pkl')
+# dataframe for aggregated retweet_count of IBM tweets on IBM/non-IBM users based on M1
+IBM_CASCADE_PKL = os.path.join(DATA_DIR, 'ibm_cascade.df.pkl')
 
-# dataframe for aggregated (observed) retweet_count of IBM tweets on IBM/non-IBM users based on method_2 affiliation.
-IBM_CASCADE_M2_PKL = os.path.join(DATA_DIR, 'ibm_cascade_m2.df.pkl')
+
 
 """
 Misc

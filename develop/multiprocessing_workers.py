@@ -159,10 +159,15 @@ def worker_tag_kws_in_tw(db_name, collection_name, batch_i, process_n, output_fi
                 output_dict['X_' + str(ind)] = res
             f.write(json.dumps(output_dict) + '\n')
 
+"""
+20170507-compare_influence_inside_outside
 
-def worker_filter_ibm_cascade_tweets(db_name, collection_name, batch_i, process_n, output_file, ibm_user_ids_set):
+Filter out retweets of IBM tweets
+"""
+
+def worker_filter_rt_ibm_tweets(db_name, collection_name, batch_i, process_n, output_file, ibm_user_ids_lst):
     """
-    Filter out all retweet/quote/reply tweets to IBM user/tweet in MondoDB database
+    Filter out all retweets of IBM tweets in specified collection
     
     :param db_name: the name of the MongoDB database (local) to work on
     :param collection_name: the name of the collection in the database to work on
@@ -171,13 +176,17 @@ def worker_filter_ibm_cascade_tweets(db_name, collection_name, batch_i, process_
     :param output_file: the output file thie thread writting results to
     :param ibm_user_ids_lst: the list of identified IBM users' ids
     
-    :param output_file: the name/path of the intermediate output file this processing writes into
+    :return: None
     """
 
-    # initialize a new connection to MongoDB database
+    '''
+    Initialize a new connection to MongoDB database
+    ''' 
     collection = mongodb.initialize(db_name=db_name, collection_name=collection_name)
     
-    # query the batch of tweets
+    '''
+    Query the batch of tweets
+    '''
     collection_size = collection.count()
     batch_size = collection_size//process_n
     skip = batch_i * batch_size
@@ -193,25 +202,13 @@ def worker_filter_ibm_cascade_tweets(db_name, collection_name, batch_i, process_
                              limit=limit)
     print('Process{}/{} handling documents {} to {}...'.format(batch_i, process_n, skip, skip + limit - 1))
     
-    # filter tweets and write to output file
+    '''
+    Filter retweets of IBM tweets and write to output file
+    '''
+    ibm_user_ids_set = set(ibm_user_ids_lst)
     with codecs.open(output_file, 'w', 'utf-8') as f:
         for doc in cursor:
-            flag = False
-            doc_dict = dict(doc)
-            # if this tweet is a retweet of IBM tweet
-            if doc_dict.get('retweeted_status'):                
-                retweeted_status_user_id_int = int(doc['retweeted_status']['user']['id'])
-                if retweeted_status_user_id_int in ibm_user_ids_set:
-                    flag = True
-            ## if this tweet is a quote of IBM tweet
-            #if doc_dict.get('quoted_status'):
-            #    quoted_status_user_id_int = int(doc['quoted_status']['user']['id'])
-            #    if quoted_status_user_id_int in ibm_user_ids_set:
-            #        flag = True
-            ## if this tweet is a reply to a IBM tweet
-            #if doc_dict.get('in_reply_to_user_id'):
-            #    if int(doc['in_reply_to_user_id']) in ibm_user_ids_set:
-            #        flag = True
-            if flag:
+            retweeted_status_user_id_int = int(doc['retweeted_status']['user']['id'])
+            if retweeted_status_user_id_int in ibm_user_ids_set:
                 f.write(json.dumps(doc) + '\n')
     logging.debug('Done')
