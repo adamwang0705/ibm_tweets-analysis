@@ -60,13 +60,20 @@ def simple_test_keyword_in_text(text, keyword, ignore_case=True):
    
 
 if __name__ == '__main__':
-    test_keyword = 'is a'
-    test_text_lst = ['List your health/beauty service/products #ibm @our http://www.healthandbeautylistings.org directory - a trustworthy testimonial for your business.',
-                     'test onibm',
-                     'test on iloveibmhahaha',
-                     'test on IBM',
-                     'this is a test on #Ibm tag',
-                     'This is another test IBM@London','']
+    test_keyword = 'ibm'
+#    test_text_lst = ['List your health/beauty service/products #ibm @our http://www.healthandbeautylistings.org directory - a #trustworthy testimonial for your business.',
+#                     'test onibm',
+#                     'test on iloveibmhahaha',
+#                     'test on IBM',
+#                     'this is a test on #Ibm tag',
+#                     'This is another test IBM@London',
+#                     'IBMer, Mainframe supporter, Open Group Certified Architect,  Unix, Linux, #blockchain, #SAP Technologies, #Windsurfer Kitesurfer Surfer Addict  Tweets are my Own',
+#                     '']
+    test_text_lst = ['VP, Healthcare at IBM. Breast cancer survivor and advocate, passionate about transforming Healthcare in Canada. All thoughts and opinions are my own.',
+                     'Cloud Sales @ibm_france @ibmcloud. Passionate about #digitaltransformation #cloud #AI. \nViews are my own',
+                     'IBM Senior Account Manager - \nB2B Global Squad Member\n#ibm #B2B #Digitalsales',
+                     'Dad. Creative (some say). Car racing enthusiast | Colombian by birth. Miamian by heart. Bostonian by fate | Global Design Director @IBM_iX - Opinions are my own']
+
     for ind, test_text in enumerate(test_text_lst):
         print('{}. '.format(ind + 1))
         print('"{}"'.format(test_text))

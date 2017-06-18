@@ -114,6 +114,12 @@ SIMPLE_INFLUENCE_PKL = os.path.join(DATA_DIR, 'simple_influence.df.pkl')
 # dataframe for aggregated retweet_count of IBM tweets on IBM/non-IBM users based on M1
 IBM_CASCADE_PKL = os.path.join(DATA_DIR, 'ibm_cascade.df.pkl')
 
+# dataframe for taged IBM follower_count of IBM users M1
+IBM_FOLLOWERS_PKL = os.path.join(DATA_DIR, 'ibm_followers.df.pkl')
+
+# dataframe for M1 IBM users' influence inside/outside IBM
+# based on IBM_CASCADE_PKL and IBM_FOLLOWERS_PKL
+IBM_INFLUENCE_PKL = os.path.join(DATA_DIR, 'ibm_influence.df.pkl')
 
 
 """

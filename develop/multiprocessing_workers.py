@@ -10,6 +10,9 @@ import logging
 import time
 import pymongo
 import shelve
+import pickle
+import os
+import glob
 
 import mongodb
 import utilities
@@ -211,4 +214,58 @@ def worker_filter_rt_ibm_tweets(db_name, collection_name, batch_i, process_n, ou
             retweeted_status_user_id_int = int(doc['retweeted_status']['user']['id'])
             if retweeted_status_user_id_int in ibm_user_ids_set:
                 f.write(json.dumps(doc) + '\n')
+    logging.debug('Done')
+
+"""
+20170507-compare_influence_inside_outside
+
+Get IBM users' IBM/non-IBM followers count
+"""
+
+def worker_count_ibm_followers_ibm_users(hydrated_uids_dir, batch_i, process_n, output_file, hydrated_uids_lst):
+    """
+    Count how many followers have keyword 'ibm' in 'description' field
+    
+    :param hydrated_uids_dir: dir of hydrated followers objs for each IBM user
+    :param batch_i: the index of this batch, from 0 to processes number minus 1
+    :param process_n: the total nubmer of processes working together
+    :param output_file: the output file thie thread writting results to
+    :param ibm_user_ids_lst: the list of identified IBM users' ids
+    
+    :return: None
+    """
+
+    '''
+    Slice the batch of hydrated follower uids
+    '''
+    batch_size = len(hydrated_uids_lst) // process_n
+    s_ind = batch_i * batch_size # starting index of the batch
+    e_ind = s_ind + batch_size - 1 # ending index of the batch
+    if batch_i == (process_n - 1): # if this is the last batch, process all left
+        e_ind = len(hydrated_uids_lst) - 1
+    
+    batch_hydrated_uids_lst = hydrated_uids_lst[s_ind: (e_ind + 1)]
+    print('Process ({}/{}) handling files: {}-{}...'.format((batch_i + 1), process_n, s_ind, e_ind))
+    
+    '''
+    Count how many followers have keyword "ibm" in "description" field
+    '''
+    keyword = 'ibm'
+    with open(output_file, 'w') as out_f:
+        for hydrated_uid in batch_hydrated_uids_lst:
+            output_dict = {'uid': hydrated_uid}
+            follower_objs_file = os.path.join(hydrated_uids_dir, '{}.json'.format(hydrated_uid))
+
+            followers_count = 0
+            ibm_followers_count = 0
+            with codecs.open(follower_objs_file, 'r', 'utf-8') as in_f:
+                for line in in_f:
+                    follower_obj = json.loads(line)
+                    follower_desc_ibm = utilities.simple_test_keyword_in_text(follower_obj['description'], keyword)
+                    followers_count += 1
+                    if follower_desc_ibm:
+                        ibm_followers_count += 1
+            output_dict['followers_count'] = followers_count
+            output_dict['ibm_followers_count'] = ibm_followers_count
+            out_f.write(json.dumps(output_dict) + '\n')
     logging.debug('Done')
