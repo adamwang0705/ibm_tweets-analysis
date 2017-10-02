@@ -13,6 +13,7 @@ import shelve
 import pickle
 import os
 import glob
+from textblob import TextBlob
 
 import mongodb
 import utilities
@@ -269,3 +270,83 @@ def worker_count_ibm_followers_ibm_users(hydrated_uids_dir, batch_i, process_n, 
             output_dict['ibm_followers_count'] = ibm_followers_count
             out_f.write(json.dumps(output_dict) + '\n')
     logging.debug('Done')
+
+'''
+20170911-quote_tweets_sentiment
+Perform sentiment analysis on quote tweets in 'text' and 'quoted_status.text' field (multiprocessing)
+'''
+def worker_qt_sentiment(db_name, collection_name, batch_i, process_n, output_file):
+    """
+    Get sentiment score for quote tweet text and corresponding original tweet text
+    
+    :param db_name: the name of the MongoDB database (local) to work on
+    :param collection_name: the name of the collection in the database to work on
+    :param batch_i: the index of this batch, from 0 to processes number minus 1
+    :param process_n: the total nubmer of processes working together
+    :param output_file: the name/path of the intermediate output file this processing writes into
+    """
+    
+    '''
+    Establish connection to MongoDB database and query batch of tweets
+    '''
+    collection = mongodb.initialize(db_name=db_name, collection_name=collection_name)
+    
+    collection_size = collection.count()
+    batch_size = collection_size//process_n
+    skip = batch_i * batch_size
+    limit = batch_size
+    if batch_i == (process_n - 1): # if this is the last batch, process all left
+        limit = collection_size - skip + 1
+    
+    time.sleep(batch_i * 0.5) # sleep few seconds to reduce the peak burden of MongoDB database
+    
+    print('Process{}/{} handling documents {} to {}...'.format(batch_i, process_n, skip, skip + limit - 1))
+    cursor = collection.find(sort=[('_id', pymongo.ASCENDING)], # sort by default '_id' ascending
+                             projection={'_id': 0, 
+                                         'id': 1, 
+                                         'user.id': 1, 
+                                         'user.followers_count': 1, 
+                                         'text': 1,
+                                         'retweet_count': 1,
+                                         'quoted_status.id': 1, 
+                                         'quoted_status.user.id': 1,
+                                         'quoted_status.user.followers_count': 1,
+                                         'quoted_status.text': 1, 
+                                         'quoted_status.retweet_count': 1}, # minimize I/O bandwidth
+                             skip=skip,
+                             limit=limit)
+    
+    '''
+    Perform sentiment analysis on quote tweets in 'text' and 'quoted_status.text' field
+    '''   
+    with codecs.open(output_file, 'w', 'utf-8') as f:
+        for doc in cursor:
+            id_int = int(doc['id'])
+            user_id_int = int(doc['user']['id'])
+            user_followers_count_int = int(doc['user']['followers_count'])
+            retweet_count_int = int(doc['retweet_count'])
+            text = doc['text']
+            
+            qt_id_int = int(doc['quoted_status']['id'])
+            qt_user_id_int = int(doc['quoted_status']['user']['id'])
+            qt_user_followers_count_int = int(doc['quoted_status']['user']['followers_count'])
+            qt_retweet_count_int = int(doc['quoted_status']['retweet_count'])
+            qt_text = doc['quoted_status']['text']
+            
+            output_dict = {'id': id_int,
+                           'user_id': user_id_int,
+                           'user_followers_count': user_followers_count_int,
+                           'retweet_count': retweet_count_int,
+                           'text': text, 
+                           'quoted_status_id': qt_id_int, 
+                           'quoted_status_user_id': qt_user_id_int, 
+                           'quoted_status_user_followers_count': qt_user_followers_count_int, 
+                           'quoted_status_retweet_count': qt_retweet_count_int,
+                           'quoted_status_text': qt_text}
+            
+            text_polarity = TextBlob(text).sentiment.polarity
+            output_dict['X_text_polarity'] = text_polarity
+            qt_text_polarity = TextBlob(qt_text).sentiment.polarity
+            output_dict['X_qt_text_polarity'] = qt_text_polarity
+            
+            f.write(json.dumps(output_dict) + '\n')

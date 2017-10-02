@@ -47,13 +47,14 @@ TW_NT_TXT_IBM_TAG_COL = 'tw_nt_txt_ibm_tag'
 # based on TW_RT_COL
 TW_RT_IBM_TW_COL = 'tw_rt_ibm_tw'
 
-# ====================================================
+# colletion of quote tweets
+TW_NT_QT_COL = 'tw_nt_qt'
 
-# collection for original tweets of 'retweet tweets'
-RT_ORIGIN_COL = 'c2_rt_origin'
+# collection of retweets of quote tweets
+TW_RT_QT_COL = 'tw_rt_qt'
 
-# collection for 'ibm' keyword tagging results
-IBM_TAG_COL = 'c2_ibm_tag'
+# colletion of sentiment analysis on quote tweets
+TW_NT_QT_SENT_COL = 'tw_nt_qt_sent'
 
 
 
@@ -120,6 +121,9 @@ IBM_FOLLOWERS_PKL = os.path.join(DATA_DIR, 'ibm_followers.df.pkl')
 # dataframe for M1 IBM users' influence inside/outside IBM
 # based on IBM_CASCADE_PKL and IBM_FOLLOWERS_PKL
 IBM_INFLUENCE_PKL = os.path.join(DATA_DIR, 'ibm_influence.df.pkl')
+
+# dataframe for pos/neu/neg sentiments quote tweets influence info
+QT_SENY_INFLUENCE_PKL = os.path.join(DATA_DIR, 'qt_sent_influence.df.pkl')
 
 
 """
